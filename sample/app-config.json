@@ -1,0 +1,84 @@
+[
+    {
+        "host": "localhost",
+        "port": 8081,
+        "routes": [
+            {
+                "path": "/hello",
+                "components": [
+                    {
+                        "type": "setHeaders",
+                        "headers": {
+                            "test": "dpftest",
+                            "dpf": "test"
+                        }
+                    },
+                    {
+                        "type": "logger",
+                        "message": "Headers: $$JSON.stringify(res._headers)$$"
+                    },
+                    {
+                        "type": "customFunction",
+                        "require": "../sample/sampleCustomFunctions",
+                        "function": "customFunction"
+                    },
+                    {
+                        "type": "logger",
+                        "message": "myVar: $$res.locals.myVar$$"
+                    },
+                    {
+                        "type": "setPayload",
+                        "value": "Hello World"
+                    },
+                    {
+                        "type": "customErrorHandler",
+                        "require": "../sample/sampleCustomFunctions",
+                        "function": "errorHandler"
+                    }
+                ]
+            },
+            {
+                "path": "/hello2/:id",
+                "components": [
+                    {
+                        "type": "setPayload",
+                        "value": "You passed in ID: $$req.getParam('id')$$"
+                    }
+                ]
+            },
+            {
+                "path": "/hello3",
+                "components": [
+                    {
+                        "type": "setPayload",
+                        "value": "You passed in ID: $$req.getParam('id')$$"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "host": "localhost",
+        "port": 8082,
+        "routes": [
+            {
+                "path": "/hello",
+                "components": [
+                    {
+                        "type": "setPayload",
+                        "value": "Hello World 3"
+                    }
+                ]
+            },
+            {
+                "path": "/hello2",
+                "components": [
+                    {
+                        "type": "setPayload",
+                        "value": "Hello World 4"
+                    }
+                ]
+            }
+        ]
+    }
+]
