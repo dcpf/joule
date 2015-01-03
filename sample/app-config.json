@@ -9,8 +9,8 @@
                     {
                         "type": "setHeaders",
                         "headers": {
-                            "test": "dpftest",
-                            "dpf": "test"
+                            "test": "testing",
+                            "test2": "testing2"
                         }
                     },
                     {
@@ -27,8 +27,10 @@
                         "message": "myVar: $$res.locals.myVar$$"
                     },
                     {
-                        "type": "setPayload",
-                        "value": "Hello World"
+                        "type": "parseTemplate",
+                        "file": "sample/sample.txt",
+                        "attrs": {"id": "$$req.getParam('id')$$"},
+                        "setPayload": true
                     },
                     {
                         "type": "customErrorHandler",

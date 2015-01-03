@@ -1,3 +1,8 @@
+'use strict';
+
+var fs = require('fs');
+var _ = require('underscore/underscore');
+
 var addRouteHandler = function (app, route) {
     var func = function(req, res, next) {
         next();
@@ -5,7 +10,7 @@ var addRouteHandler = function (app, route) {
     // Add the route handler using the configured method (get, post, etc). If no method is set, use GET by default.
     route.method = route.method || 'get';
     eval('app.' + route.method.toLowerCase() + '(route.path, func)');
-}
+};
 
 var addSetHeadersHandler = function (app, route, component) {
     var func = function(req, res, next) {
@@ -13,15 +18,15 @@ var addSetHeadersHandler = function (app, route, component) {
         next();
     };
     app.use(route.path, func);
-}
+};
 
 var addSetPayloadHandler = function (app, route, component) {
     var func = function(req, res, next) {
-        res.locals._joule.payload = evalString(component.value, req, res);
+        res.setPayload(evalString(component.value, req, res));
         next();
     };
     app.use(route.path, func);
-}
+};
 
 var addLoggerHandler = function (app, route, component) {
     var func = function(req, res, next) {
@@ -29,7 +34,34 @@ var addLoggerHandler = function (app, route, component) {
         next();
     };
     app.use(route.path, func);
-}
+};
+
+var addParseTemplateHandler = function (app, route, component) {
+    component.encoding = component.encoding || 'utf8';
+    component.attrs = component.attrs || {};
+    var templateCache = {};
+    var func = function(req, res, next) {
+        var template = templateCache[component.file];
+        if (!template) {
+            console.log('Getting ' + component.file + ' template from disk');
+            // TODO: Use let with ES6
+            var file = fs.readFileSync(component.file, {encoding: component.encoding});
+            template = _.template(file);
+            templateCache[component.file] = template;
+        }
+        for (var key in component.attrs) {
+            component.attrs[key] = evalString(component.attrs[key], req, res);
+        }
+        var parsed = template(component.attrs);
+        if (component.setPayload) {
+            res.setPayload(parsed);
+        } else {
+            res.locals[component.file] = parsed;
+        }
+        next();
+    };
+    app.use(route.path, func);
+};
 
 var addCustomFunctionHandler = function (app, route, component) {
     var func = function(req, res, next) {
@@ -38,7 +70,7 @@ var addCustomFunctionHandler = function (app, route, component) {
         next();
     };
     app.use(route.path, func);
-}
+};
 
 var addCustomErrorHandlerHandler = function (app, route, component) {
     var func = function(err, req, res, next) {
@@ -46,19 +78,20 @@ var addCustomErrorHandlerHandler = function (app, route, component) {
         eval('obj.' + component.function + '(err, req, res, next)');
     };
     app.use(route.path, func);
-}
+};
 
 var addSendResponseHandler = function (app, route) {
     var func = function(req, res, next) {
-        res.send(res.locals._joule.payload);
+        res.send(res.getPayload());
     };
     app.use(route.path, func);
-}
+};
 
 exports.addRouteHandler = addRouteHandler;
 exports.addSetHeadersHandler = addSetHeadersHandler;
 exports.addSetPayloadHandler = addSetPayloadHandler;
 exports.addLoggerHandler = addLoggerHandler;
+exports.addParseTemplateHandler = addParseTemplateHandler;
 exports.addCustomFunctionHandler = addCustomFunctionHandler;
 exports.addSendResponseHandler = addSendResponseHandler;
 exports.addCustomErrorHandlerHandler = addCustomErrorHandlerHandler;

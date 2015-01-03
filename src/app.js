@@ -127,6 +127,14 @@ function enhanceRequest (req, res, next) {
     // Create a space for joule-specific stuff
     res.locals._joule = {};
     
+    res.setPayload = function (payload) {
+        res.locals._joule.payload = payload;
+    };
+    
+    res.getPayload = function () {
+        return res.locals._joule.payload;
+    };
+
     // Get the passed-in params (for either GET, POST or route params), and make them available via req.getParam() and req.getParams()
     var params = {};
     if (req.method === 'POST') {
