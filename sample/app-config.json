@@ -7,6 +7,15 @@
                 "path": "/hello",
                 "components": [
                     {
+                        "type": "setVariable",
+                        "name": "id",
+                        "value": "$$req.getParam('id')$$"
+                    },
+                    {
+                        "type": "logger",
+                        "message": "ID: $$res.getVariable('id')$$"
+                    },
+                    {
                         "type": "setHeaders",
                         "headers": {
                             "test": "testing",

@@ -12,6 +12,14 @@ var addRouteHandler = function (app, route) {
     eval('app.' + route.method.toLowerCase() + '(route.path, func)');
 };
 
+var addSetVariableHandler = function (app, route, component) {
+    var func = function(req, res, next) {
+        res.setVariable(component.name, evalString(component.value, req, res));
+        next();
+    };
+    app.use(route.path, func);
+};
+
 var addSetHeadersHandler = function (app, route, component) {
     var func = function(req, res, next) {
         res.set(component.headers);
@@ -56,7 +64,7 @@ var addParseTemplateHandler = function (app, route, component) {
         if (component.setPayload) {
             res.setPayload(parsed);
         } else {
-            res.locals[component.file] = parsed;
+            res.setVariable(component.file, parsed);
         }
         next();
     };
@@ -88,6 +96,7 @@ var addSendResponseHandler = function (app, route) {
 };
 
 exports.addRouteHandler = addRouteHandler;
+exports.addSetVariableHandler = addSetVariableHandler;
 exports.addSetHeadersHandler = addSetHeadersHandler;
 exports.addSetPayloadHandler = addSetPayloadHandler;
 exports.addLoggerHandler = addLoggerHandler;

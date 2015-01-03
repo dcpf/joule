@@ -126,6 +126,15 @@ function enhanceRequest (req, res, next) {
     
     // Create a space for joule-specific stuff
     res.locals._joule = {};
+    res.locals._joule.vars = {};
+    
+    res.setVariable = function (name, value) {
+        res.locals._joule.vars[name] = value;
+    };
+    
+    res.getVariable = function (name) {
+        return res.locals._joule.vars[name];
+    };
     
     res.setPayload = function (payload) {
         res.locals._joule.payload = payload;
