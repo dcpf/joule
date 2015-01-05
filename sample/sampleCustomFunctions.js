@@ -1,6 +1,6 @@
 module.exports.customFunction = function (req, res, next) {
     console.log('in custom function');
-    res.locals.myVar = 'this is a test';
+    res.setVariable('myVar', 'this is a test');
 }
 
 module.exports.errorHandler = function (err, req, res, next) {

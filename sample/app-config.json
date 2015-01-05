@@ -47,11 +47,11 @@
                     },
                     {
                         "type": "logger",
-                        "message": "myVar: $$res.locals.myVar$$"
+                        "message": "myVar: $$res.getVariable('myVar')$$"
                     },
                     {
                         "type": "setPayload",
-                        "value": "myVar: $$res.locals.myVar$$"
+                        "value": "myVar: $$res.getVariable('myVar')$$"
                     }
                 ]
             },
