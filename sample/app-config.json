@@ -4,38 +4,8 @@
         "port": 8081,
         "routes": [
             {
-                "path": "/hello",
+                "path": "/setHeaders",
                 "components": [
-                    {
-                        "type": "choice",
-                        "conditions": [
-                            {
-                                "if": "$$req.getParam('id') === 'hello'$$",
-                                "then": "$$res.setVariable('id', 'HELLO')$$"
-                            },
-                            {
-                                "if": "$$req.getParam('id') === 'hello2'$$",
-                                "then": "$$res.setVariable('id', 'HELLO2')$$"
-                            },
-                            {
-                                "if": "$$true$$",
-                                "then": "$$res.setVariable('id', 'Invalid param: ' + req.getParam('id'))$$"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "logger",
-                        "message": "ID: $$res.getVariable('id')$$"
-                    },
-                    {
-                        "type": "setVariable",
-                        "name": "passedInId",
-                        "value": "$$req.getParam('id')$$"
-                    },
-                    {
-                        "type": "logger",
-                        "message": "passedInId: $$res.getVariable('passedInId')$$"
-                    },
                     {
                         "type": "setHeaders",
                         "headers": {
@@ -46,7 +16,30 @@
                     {
                         "type": "logger",
                         "message": "Headers: $$JSON.stringify(res._headers)$$"
+                    }
+                ]
+            },
+            {
+                "path": "/setVariable",
+                "components": [
+                    {
+                        "type": "setVariable",
+                        "name": "passedInId",
+                        "value": "$$req.getParam('id')$$"
                     },
+                    {
+                        "type": "logger",
+                        "message": "id: $$res.getVariable('passedInId')$$"
+                    },
+                    {
+                        "type": "setPayload",
+                        "value": "You passed in id: $$res.getVariable('passedInId')$$"
+                    }
+                ]
+            },
+            {
+                "path": "/customFunction",
+                "components": [
                     {
                         "type": "customFunction",
                         "require": "../sample/sampleCustomFunctions",
@@ -57,11 +50,36 @@
                         "message": "myVar: $$res.locals.myVar$$"
                     },
                     {
+                        "type": "setPayload",
+                        "value": "myVar: $$res.locals.myVar$$"
+                    }
+                ]
+            },
+            {
+                "path": "/parseTemplate",
+                "components": [
+                    {
                         "type": "parseTemplate",
                         "file": "sample/sample.txt",
                         "attrs": {"id": "$$req.getParam('id')$$"},
                         "setPayload": true
-                    },
+                    }
+                ]
+            },
+            {
+                "path": "/parseTemplate2/:id",
+                "components": [
+                    {
+                        "type": "parseTemplate",
+                        "file": "sample/sample.txt",
+                        "attrs": {"id": "$$req.getParam('id')$$"},
+                        "setPayload": true
+                    }
+                ]
+            },
+            {
+                "path": "/customErrorHandler",
+                "components": [
                     {
                         "type": "customErrorHandler",
                         "require": "../sample/sampleCustomFunctions",
@@ -70,20 +88,32 @@
                 ]
             },
             {
-                "path": "/hello2/:id",
+                "path": "/choiceHandler",
                 "components": [
                     {
-                        "type": "setPayload",
-                        "value": "You passed in ID: $$req.getParam('id')$$"
-                    }
-                ]
-            },
-            {
-                "path": "/hello3",
-                "components": [
+                        "type": "choice",
+                        "conditions": [
+                            {
+                                "if": "$$req.getParam('id') === 'hello'$$",
+                                "then": "$$res.setVariable('response', 'HELLO')$$"
+                            },
+                            {
+                                "if": "$$req.getParam('id') === 'hello2'$$",
+                                "then": "$$res.setVariable('response', 'HELLO2')$$"
+                            },
+                            {
+                                "if": "$$true$$",
+                                "then": "$$res.setVariable('response', 'Invalid param: ' + req.getParam('id'))$$"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "logger",
+                        "message": "ID: $$res.getVariable('response')$$"
+                    },
                     {
                         "type": "setPayload",
-                        "value": "You passed in ID: $$req.getParam('id')$$"
+                        "value": "Response: $$res.getVariable('response')$$"
                     }
                 ]
             }
