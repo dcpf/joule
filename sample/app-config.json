@@ -7,13 +7,34 @@
                 "path": "/hello",
                 "components": [
                     {
-                        "type": "setVariable",
-                        "name": "id",
-                        "value": "$$req.getParam('id')$$"
+                        "type": "choice",
+                        "conditions": [
+                            {
+                                "if": "$$req.getParam('id') === 'hello'$$",
+                                "then": "$$res.setVariable('id', 'HELLO')$$"
+                            },
+                            {
+                                "if": "$$req.getParam('id') === 'hello2'$$",
+                                "then": "$$res.setVariable('id', 'HELLO2')$$"
+                            },
+                            {
+                                "if": "$$true$$",
+                                "then": "$$res.setVariable('id', 'Invalid param: ' + req.getParam('id'))$$"
+                            }
+                        ]
                     },
                     {
                         "type": "logger",
                         "message": "ID: $$res.getVariable('id')$$"
+                    },
+                    {
+                        "type": "setVariable",
+                        "name": "passedInId",
+                        "value": "$$req.getParam('id')$$"
+                    },
+                    {
+                        "type": "logger",
+                        "message": "passedInId: $$res.getVariable('passedInId')$$"
                     },
                     {
                         "type": "setHeaders",

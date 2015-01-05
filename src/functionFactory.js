@@ -45,26 +45,43 @@ var addLoggerHandler = function (app, route, component) {
 };
 
 var addParseTemplateHandler = function (app, route, component) {
-    component.encoding = component.encoding || 'utf8';
-    component.attrs = component.attrs || {};
+    var encoding = component.encoding || 'utf8';
     var templateCache = {};
     var func = function(req, res, next) {
         var template = templateCache[component.file];
         if (!template) {
             console.log('Getting ' + component.file + ' template from disk');
             // TODO: Use let with ES6
-            var file = fs.readFileSync(component.file, {encoding: component.encoding});
+            var file = fs.readFileSync(component.file, {encoding: encoding});
             template = _.template(file);
             templateCache[component.file] = template;
         }
+        var attrs = {};
         for (var key in component.attrs) {
-            component.attrs[key] = evalString(component.attrs[key], req, res);
+            attrs[key] = evalString(component.attrs[key], req, res);
         }
-        var parsed = template(component.attrs);
+        var parsed = template(attrs);
         if (component.setPayload) {
             res.setPayload(parsed);
         } else {
             res.setVariable(component.file, parsed);
+        }
+        next();
+    };
+    app.use(route.path, func);
+};
+
+var addChoiceHandler = function (app, route, component) {
+    var func = function(req, res, next) {
+        var length = component.conditions.length;
+        var condition;
+        for (var i = 0; i < length; i++) {
+            condition = component.conditions[i];
+            var result = evalString(condition.if, req, res);
+            if (result) {
+                evalString(condition.then, req, res);
+                break;
+            }
         }
         next();
     };
@@ -101,6 +118,7 @@ exports.addSetHeadersHandler = addSetHeadersHandler;
 exports.addSetPayloadHandler = addSetPayloadHandler;
 exports.addLoggerHandler = addLoggerHandler;
 exports.addParseTemplateHandler = addParseTemplateHandler;
+exports.addChoiceHandler = addChoiceHandler;
 exports.addCustomFunctionHandler = addCustomFunctionHandler;
 exports.addSendResponseHandler = addSendResponseHandler;
 exports.addCustomErrorHandlerHandler = addCustomErrorHandlerHandler;
@@ -114,21 +132,28 @@ exports.addCustomErrorHandlerHandler = addCustomErrorHandlerHandler;
 * req.getParam('id') will get eval'ed and the output included as part of the string. Note that strings can contain multiple tokens.
 */
 function evalString (s, req, res) {
-    var result = '';
+    
+    var result;
     var array = s.split(/(\$\$)/);
     var length = array.length;
     var token = false;
+    
     for (var i = 0; i < length; i++) {
         var str = array[i];
+        if (!str) {
+            continue;
+        }
         if (str === '$$') {
             token = !token;
             continue;
         }
         if (token) {
-            result += eval(array[i]);
+            result = (result) ? result + eval(str) : eval(str);
         } else {
-            result += array[i];
+            result = (result) ? result + str : str;
         }
     }
+    
     return result;
+    
 }
