@@ -3,48 +3,48 @@
 var fs = require('fs');
 var _ = require('underscore/underscore');
 
-var addRouteHandler = function (app, route) {
+var getRouteHandler = function (app, route) {
     var func = function(req, res, next) {
         next();
     };
-    // Add the route handler using the configured method (get, post, etc). If no method is set, use GET by default.
+    // Create the route handler using the configured method (get, post, etc). If no method is set, use GET by default.
     route.method = route.method || 'get';
     eval('app.' + route.method.toLowerCase() + '(route.path, func)');
 };
 
-var addSetVariableHandler = function (app, route, component) {
+var getSetVariableHandler = function (component) {
     var func = function(req, res, next) {
         res.setVariable(component.name, evalString(component.value, req, res));
         next();
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addSetHeadersHandler = function (app, route, component) {
+var getSetHeadersHandler = function (component) {
     var func = function(req, res, next) {
         res.set(component.headers);
         next();
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addSetPayloadHandler = function (app, route, component) {
+var getSetPayloadHandler = function (component) {
     var func = function(req, res, next) {
         res.setPayload(evalString(component.value, req, res));
         next();
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addLoggerHandler = function (app, route, component) {
+var getLoggerHandler = function (component) {
     var func = function(req, res, next) {
         console.log(evalString(component.message, req, res));
         next();
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addParseTemplateHandler = function (app, route, component) {
+var getParseTemplateHandler = function (component) {
     var encoding = component.encoding || 'utf8';
     var templateCache = {};
     var func = function(req, res, next) {
@@ -68,10 +68,10 @@ var addParseTemplateHandler = function (app, route, component) {
         }
         next();
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addChoiceHandler = function (app, route, component) {
+var getChoiceHandler = function (component) {
     var func = function(req, res, next) {
         var length = component.conditions.length;
         var condition;
@@ -85,43 +85,43 @@ var addChoiceHandler = function (app, route, component) {
         }
         next();
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addCustomFunctionHandler = function (app, route, component) {
+var getCustomFunctionHandler = function (component) {
     var func = function(req, res, next) {
         var obj = require(component.require);
         eval('obj.' + component.function + '(req, res, next)');
         next();
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addCustomErrorHandlerHandler = function (app, route, component) {
+var getCustomErrorHandlerHandler = function (component) {
     var func = function(err, req, res, next) {
         var obj = require(component.require);
         eval('obj.' + component.function + '(err, req, res, next)');
     };
-    app.use(route.path, func);
+    return func;
 };
 
-var addSendResponseHandler = function (app, route) {
+var getSendResponseHandler = function () {
     var func = function(req, res, next) {
         res.send(res.getPayload());
     };
-    app.use(route.path, func);
+    return func;
 };
 
-exports.addRouteHandler = addRouteHandler;
-exports.addSetVariableHandler = addSetVariableHandler;
-exports.addSetHeadersHandler = addSetHeadersHandler;
-exports.addSetPayloadHandler = addSetPayloadHandler;
-exports.addLoggerHandler = addLoggerHandler;
-exports.addParseTemplateHandler = addParseTemplateHandler;
-exports.addChoiceHandler = addChoiceHandler;
-exports.addCustomFunctionHandler = addCustomFunctionHandler;
-exports.addSendResponseHandler = addSendResponseHandler;
-exports.addCustomErrorHandlerHandler = addCustomErrorHandlerHandler;
+exports.getRouteHandler = getRouteHandler;
+exports.getSetVariableHandler = getSetVariableHandler;
+exports.getSetHeadersHandler = getSetHeadersHandler;
+exports.getSetPayloadHandler = getSetPayloadHandler;
+exports.getLoggerHandler = getLoggerHandler;
+exports.getParseTemplateHandler = getParseTemplateHandler;
+exports.getChoiceHandler = getChoiceHandler;
+exports.getCustomFunctionHandler = getCustomFunctionHandler;
+exports.getSendResponseHandler = getSendResponseHandler;
+exports.getCustomErrorHandlerHandler = getCustomErrorHandlerHandler;
 
 /**
 * Process a string that might contain 'tokens' that need evaluation. Tokens are javascript code/objects surrounded by '$$'.

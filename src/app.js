@@ -22,7 +22,8 @@ var appConfig = initConfig(),
     j = 0,
     route,
     k = 0,
-    component;
+    component,
+    func;
 
 for (i in appConfig) {
    
@@ -32,7 +33,7 @@ for (i in appConfig) {
     for (j in connector.routes) {
         
         route = connector.routes[j];
-        functionFactory.addRouteHandler(app, route);
+        functionFactory.getRouteHandler(app, route);
         
         var customErrorHandler = false;
         for (k in route.components) {
@@ -40,8 +41,11 @@ for (i in appConfig) {
             component = route.components[k];
             
             // Convert the component type to a function and eval it.
-            // Example: setHeaders > functionFactory.addSetHeadersHandler(app, route, component)
-            eval('functionFactory.' + typeToFunctionName(component.type) + '(app, route, component)');
+            // Example: setHeaders > functionFactory.getSetHeadersHandler(app, route, component)
+            func = eval('functionFactory.' + typeToFunctionName(component.type) + '(component)');
+            
+            // Attach the function to the app
+            app.use(route.path, func);
             
             // If the user has supplied their own error handler, flag it here.
             if (component.type === 'customErrorHandler') {
@@ -50,11 +54,13 @@ for (i in appConfig) {
             
         }
         
-        functionFactory.addSendResponseHandler(app, route);
+        // Finally, attach the send response handler.
+        func = functionFactory.getSendResponseHandler();
+        app.use(route.path, func);
         
     }
     
-    // If no custom error handler has been configured, add a default error handler last to catch, log, and return an appropriate response.
+    // If no custom error handler has been configured, use a default error handler last to catch, log, and return an appropriate response.
     if (!customErrorHandler) {
         app.use(function(err, req, res, next) {
             if (!err) {
@@ -70,10 +76,10 @@ for (i in appConfig) {
 /**
 * Convert a type (from the JSON config) to a function name. Example:
 * 
-* setHeaders > addSetHeadersHandler
+* setHeaders > getSetHeadersHandler
 */
 function typeToFunctionName (type) {
-    return 'add' + type.charAt(0).toUpperCase() + type.substring(1) + 'Handler';
+    return 'get' + type.charAt(0).toUpperCase() + type.substring(1) + 'Handler';
 }
 
 function initConfig () {
