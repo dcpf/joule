@@ -171,6 +171,9 @@ function getURL (url) {
     return deferred.promise;
 }
 
+/**
+* Parse the response into headers and body
+*/
 function parseResponse (stdout) {
     
     var response = {
