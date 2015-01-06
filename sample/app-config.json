@@ -113,7 +113,7 @@
                     },
                     {
                         "type": "setPayload",
-                        "value": "Response: $$res.getVariable('response')$$"
+                        "value": "$$res.getVariable('response')$$"
                     }
                 ]
             }
