@@ -8,5 +8,5 @@ module.exports.errorHandler = function (err, req, res, next) {
         return next();
     }
     console.error("In custom error handler\n" + err.stack);
-    res.status(500).send(err.message);
+    res.status(500).send("In custom error handler: " + err.message);
 }

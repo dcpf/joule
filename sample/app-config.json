@@ -81,6 +81,11 @@
                 "path": "/customErrorHandler",
                 "components": [
                     {
+                        "type": "parseTemplate",
+                        "file": "non-existent-file-to-force-an-error",
+                        "attrs": {}
+                    },
+                    {
                         "type": "customErrorHandler",
                         "require": "../sample/sampleCustomFunctions",
                         "function": "errorHandler"

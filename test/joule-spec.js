@@ -67,15 +67,14 @@ describe("Joule test Suite", function() {
         });
     });
     
-    /* TODO: Flesh this out.
     it("tests customErrorHandler", function(done) {
         getURL('curl -i http://localhost:8081/customErrorHandler')
         .then(function (response) {
-            expect(response.body).toEqual('This is the ID you passed in: test3');
+            expect(response.headers['HTTP/1.1 500 Internal Server Error']).toBeDefined();
+            expect(response.body).toMatch(/^In custom error handler.+/);
             done();
         });
     });
-    */
     
     for (var property in choiceParams) {
         if (choiceParams.hasOwnProperty(property)) {
@@ -107,7 +106,7 @@ describe("Joule test Suite", function() {
 /**
 * Exec the curl command for the passed-in URL
 */
-function getURL (url) {
+function getURL (cmd) {
     var deferred = q.defer();
     exec(cmd, function (err, stdout, stderr) {
         if (err) {
