@@ -109,7 +109,7 @@ describe("Joule test Suite", function() {
 */
 function getURL (url) {
     var deferred = q.defer();
-    exec(url, function (err, stdout, stderr) {
+    exec(cmd, function (err, stdout, stderr) {
         if (err) {
             deferred.reject(err);
         } else {
