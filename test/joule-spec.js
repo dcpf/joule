@@ -88,6 +88,14 @@ describe("Joule test Suite", function() {
             });
         }
     }
+    
+    it("tests 404 Not Found", function(done) {
+        getURL('curl -i http://localhost:8081/whatever')
+        .then(function (response) {
+            expect(response.headers['HTTP/1.1 404 Not Found']).toBeDefined();
+            done();
+        });
+    });
         
 });
 
