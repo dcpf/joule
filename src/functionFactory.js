@@ -73,9 +73,8 @@ var getParseTemplateHandler = function (component) {
 
 var getChoiceHandler = function (component) {
     var func = function(req, res, next) {
-        var length = component.conditions.length;
         var condition;
-        for (var i = 0; i < length; i++) {
+        for (var i in component.conditions) {
             condition = component.conditions[i];
             var result = evalString(condition.if, req, res);
             if (result) {
@@ -135,10 +134,9 @@ function evalString (s, req, res) {
     
     var result;
     var array = s.split(/(\$\$)/);
-    var length = array.length;
     var token = false;
     
-    for (var i = 0; i < length; i++) {
+    for (var i in array) {
         var str = array[i];
         if (!str) {
             continue;
