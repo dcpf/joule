@@ -1,151 +1,157 @@
-[
-    {
-        "host": "localhost",
-        "port": 8081,
-        "routes": [
-            {
-                "path": "/setHeaders",
-                "components": [
-                    {
-                        "type": "setHeaders",
-                        "headers": {
-                            "test": "testing",
-                            "test2": "testing2"
+{
+    "components": {
+        "setHeaders": {
+            "type": "setHeaders",
+            "headers": {
+                "test": "testing",
+                "test2": "testing2"
+            }
+        },
+        "setHeadersLogger": {
+            "type": "logger",
+            "message": "Headers: $$JSON.stringify(res._headers)$$"
+        }
+    },    
+    "apps": [
+        {
+            "host": "localhost",
+            "port": 8081,
+            "routes": [
+                {
+                    "path": "/setHeaders",
+                    "components": [
+                        "setHeaders",
+                        "setHeadersLogger"
+                    ]
+                },
+                {
+                    "path": "/setVariable",
+                    "components": [
+                        {
+                            "type": "setVariable",
+                            "name": "passedInId",
+                            "value": "$$req.getParam('id')$$"
+                        },
+                        {
+                            "type": "logger",
+                            "message": "id: $$res.getVariable('passedInId')$$"
+                        },
+                        {
+                            "type": "setPayload",
+                            "value": "You passed in id: $$res.getVariable('passedInId')$$"
                         }
-                    },
-                    {
-                        "type": "logger",
-                        "message": "Headers: $$JSON.stringify(res._headers)$$"
-                    }
-                ]
-            },
-            {
-                "path": "/setVariable",
-                "components": [
-                    {
-                        "type": "setVariable",
-                        "name": "passedInId",
-                        "value": "$$req.getParam('id')$$"
-                    },
-                    {
-                        "type": "logger",
-                        "message": "id: $$res.getVariable('passedInId')$$"
-                    },
-                    {
-                        "type": "setPayload",
-                        "value": "You passed in id: $$res.getVariable('passedInId')$$"
-                    }
-                ]
-            },
-            {
-                "path": "/customFunction",
-                "components": [
-                    {
-                        "type": "customFunction",
-                        "require": "../sample/sampleCustomFunctions",
-                        "function": "customFunction"
-                    },
-                    {
-                        "type": "logger",
-                        "message": "myVar: $$res.getVariable('myVar')$$"
-                    },
-                    {
-                        "type": "setPayload",
-                        "value": "myVar: $$res.getVariable('myVar')$$"
-                    }
-                ]
-            },
-            {
-                "path": "/parseTemplate",
-                "components": [
-                    {
-                        "type": "parseTemplate",
-                        "file": "sample/sample.txt",
-                        "attrs": {"id": "$$req.getParam('id')$$"},
-                        "setPayload": true
-                    }
-                ]
-            },
-            {
-                "path": "/parseTemplate2/:id",
-                "components": [
-                    {
-                        "type": "parseTemplate",
-                        "file": "sample/sample.txt",
-                        "attrs": {"id": "$$req.getParam('id')$$"},
-                        "setPayload": true
-                    }
-                ]
-            },
-            {
-                "path": "/customErrorHandler",
-                "components": [
-                    {
-                        "type": "parseTemplate",
-                        "file": "non-existent-file-to-force-an-error",
-                        "attrs": {}
-                    },
-                    {
-                        "type": "customErrorHandler",
-                        "require": "../sample/sampleCustomFunctions",
-                        "function": "errorHandler"
-                    }
-                ]
-            },
-            {
-                "path": "/choiceHandler",
-                "components": [
-                    {
-                        "type": "choice",
-                        "conditions": [
-                            {
-                                "if": "$$req.getParam('id') === 'hello'$$",
-                                "then": "$$res.setVariable('response', 'HELLO')$$"
-                            },
-                            {
-                                "if": "$$req.getParam('id') === 'hello2'$$",
-                                "then": "$$res.setVariable('response', 'HELLO2')$$"
-                            },
-                            {
-                                "if": "$$true$$",
-                                "then": "$$res.setVariable('response', 'Invalid param: ' + req.getParam('id'))$$"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "logger",
-                        "message": "ID: $$res.getVariable('response')$$"
-                    },
-                    {
-                        "type": "setPayload",
-                        "value": "$$res.getVariable('response')$$"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "host": "localhost",
-        "port": 8082,
-        "routes": [
-            {
-                "path": "/hello",
-                "components": [
-                    {
-                        "type": "setPayload",
-                        "value": "Hello World 3"
-                    }
-                ]
-            },
-            {
-                "path": "/hello2",
-                "components": [
-                    {
-                        "type": "setPayload",
-                        "value": "Hello World 4"
-                    }
-                ]
-            }
-        ]
-    }
-]
+                    ]
+                },
+                {
+                    "path": "/customFunction",
+                    "components": [
+                        {
+                            "type": "customFunction",
+                            "require": "../sample/sampleCustomFunctions",
+                            "function": "customFunction"
+                        },
+                        {
+                            "type": "logger",
+                            "message": "myVar: $$res.getVariable('myVar')$$"
+                        },
+                        {
+                            "type": "setPayload",
+                            "value": "myVar: $$res.getVariable('myVar')$$"
+                        }
+                    ]
+                },
+                {
+                    "path": "/parseTemplate",
+                    "components": [
+                        {
+                            "type": "parseTemplate",
+                            "file": "sample/sample.txt",
+                            "attrs": {"id": "$$req.getParam('id')$$"},
+                            "setPayload": true
+                        }
+                    ]
+                },
+                {
+                    "path": "/parseTemplate2/:id",
+                    "components": [
+                        {
+                            "type": "parseTemplate",
+                            "file": "sample/sample.txt",
+                            "attrs": {"id": "$$req.getParam('id')$$"},
+                            "setPayload": true
+                        }
+                    ]
+                },
+                {
+                    "path": "/customErrorHandler",
+                    "components": [
+                        {
+                            "type": "parseTemplate",
+                            "file": "non-existent-file-to-force-an-error",
+                            "attrs": {}
+                        },
+                        {
+                            "type": "customErrorHandler",
+                            "require": "../sample/sampleCustomFunctions",
+                            "function": "errorHandler"
+                        }
+                    ]
+                },
+                {
+                    "path": "/choiceHandler",
+                    "components": [
+                        {
+                            "type": "choice",
+                            "conditions": [
+                                {
+                                    "if": "$$req.getParam('id') === 'hello'$$",
+                                    "then": "$$res.setVariable('response', 'HELLO')$$"
+                                },
+                                {
+                                    "if": "$$req.getParam('id') === 'hello2'$$",
+                                    "then": "$$res.setVariable('response', 'HELLO2')$$"
+                                },
+                                {
+                                    "if": "$$true$$",
+                                    "then": "$$res.setVariable('response', 'Invalid param: ' + req.getParam('id'))$$"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "logger",
+                            "message": "ID: $$res.getVariable('response')$$"
+                        },
+                        {
+                            "type": "setPayload",
+                            "value": "$$res.getVariable('response')$$"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "host": "localhost",
+            "port": 8082,
+            "routes": [
+                {
+                    "path": "/hello",
+                    "components": [
+                        {
+                            "type": "setPayload",
+                            "value": "Hello World 3"
+                        }
+                    ]
+                },
+                {
+                    "path": "/hello2",
+                    "components": [
+                        {
+                            "type": "setPayload",
+                            "value": "Hello World 4"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

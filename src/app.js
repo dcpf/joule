@@ -25,9 +25,9 @@ var appConfig = initConfig(),
     component,
     func;
 
-for (i in appConfig) {
+for (i in appConfig.apps) {
    
-    connector = appConfig[i];
+    connector = appConfig.apps[i];
     app = createExpressApplication(connector);
     
     for (j in connector.routes) {
@@ -39,6 +39,11 @@ for (i in appConfig) {
         for (k in route.components) {
             
             component = route.components[k];
+            
+            // If component is a string, it's a reference to a globally-defined component.
+            if (typeof component === 'string') {
+                component = getGlobalComponent(component);
+            }
             
             // Convert the component type to a function and eval it.
             // Example: setHeaders > functionFactory.getSetHeadersHandler(app, route, component)
@@ -71,6 +76,13 @@ for (i in appConfig) {
         });
     }
     
+}
+
+/**
+* Get a globally-defined component
+*/
+function getGlobalComponent (id) {
+    return appConfig.components[id];
 }
 
 /**
