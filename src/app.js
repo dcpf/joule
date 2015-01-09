@@ -13,10 +13,10 @@ var cookieParser = require('cookie-parser');
 var compression = require('compression');
 var errorHandler = require('errorhandler');
 
-var functionFactory = require('./functionFactory');
+var appConfig = initConfig();
+var functionFactory = require('./functionFactory')(appConfig);
 
-var appConfig = initConfig(),
-    i = 0, 
+var i = 0,
     j = 0,
     k = 0;
 
@@ -40,7 +40,7 @@ for (i in appConfig.apps) {
         for (k = numComponents - 1; k >= 0; k--) {
             
             var component = route.components[k];
-            var obj = functionFactory.getComponentFunction(component, appConfig.globalComponents, func);
+            var obj = functionFactory.getComponentFunction(component, func);
             
             // If the user has supplied their own error handler, store it here. Else, set func to the returned function.
             if (obj.type === 'customErrorHandler') {

@@ -3,36 +3,52 @@
 var fs = require('fs');
 var _ = require('underscore/underscore');
 
-/**
-* The base function that the app uses to handle the request for a given route
-*/
-var getRouteHandler = function (callback) {
-    var func = function(req, res) {
-        callback(req, res);
+module.exports = function (appConfig) {
+    return new FunctionFactory(appConfig);
+}
+
+function FunctionFactory (appConfig) {
+    
+    /**
+    * The base function that the app uses to handle the request for a given route
+    */
+    this.getRouteHandler = function (callback) {
+        var func = function(req, res) {
+            callback(req, res);
+        };
+        return func;
     };
-    return func;
+    
+    /**
+    * Convert the component type to a function and eval it.
+    * Example: setHeaders > getSetHeadersHandler(component, callback)
+    */
+    this.getComponentFunction = function (component, callback) {
+        // If component is a string, it's a reference to a globally-defined component.
+        if (typeof component === 'string') {
+            component = appConfig.globalComponents[component];
+        }
+        var func = eval(typeToFunctionName(component.type) + '(component, callback)');
+        return {func: func, type: component.type};
+    };
+    
+    /**
+    * The final function that sends the reponse
+    */
+    this.getSendResponseHandler = function () {
+        var func = function(req, res) {
+            res.send(res.getPayload());
+        };
+        return func;
+    };
+    
 };
 
+//
+// Function factory functions
+//
 
-
-
-/**
-* Convert the component type to a function and eval it.
-* Example: setHeaders > getSetHeadersHandler(component, callback)
-*/
-var getComponentFunction = function (component, globalComponents, callback) {
-    // If component is a string, it's a reference to a globally-defined component.
-    if (typeof component === 'string') {
-        component = globalComponents[component];
-    }
-    var func = eval(typeToFunctionName(component.type) + '(component, callback)');
-    return {func: func, type: component.type};
-};
-
-
-
-
-var getSetVariableHandler = function (component, callback) {
+function getSetVariableHandler (component, callback) {
     var func = function(req, res) {
         res.setVariable(component.name, evalString(component.value, req, res));
         callback(req, res);
@@ -40,7 +56,7 @@ var getSetVariableHandler = function (component, callback) {
     return func;
 };
 
-var getSetHeadersHandler = function (component, callback) {
+function getSetHeadersHandler (component, callback) {
     var func = function(req, res) {
         res.set(component.headers);
         callback(req, res);
@@ -48,7 +64,7 @@ var getSetHeadersHandler = function (component, callback) {
     return func;
 };
 
-var getSetPayloadHandler = function (component, callback) {
+function getSetPayloadHandler (component, callback) {
     var func = function(req, res) {
         res.setPayload(evalString(component.value, req, res));
         callback(req, res);
@@ -56,7 +72,7 @@ var getSetPayloadHandler = function (component, callback) {
     return func;
 };
 
-var getLoggerHandler = function (component, callback) {
+function getLoggerHandler (component, callback) {
     var func = function(req, res) {
         console.log(evalString(component.message, req, res));
         callback(req, res);
@@ -64,7 +80,7 @@ var getLoggerHandler = function (component, callback) {
     return func;
 };
 
-var getParseTemplateHandler = function (component, callback) {
+function getParseTemplateHandler (component, callback) {
     var encoding = component.encoding || 'utf8';
     var templateCache = {};
     var func = function(req, res) {
@@ -91,7 +107,7 @@ var getParseTemplateHandler = function (component, callback) {
     return func;
 };
 
-var getChoiceHandler = function (component, callback) {
+function getChoiceHandler (component, callback) {
     var func = function(req, res) {
         var condition;
         for (var i in component.conditions) {
@@ -107,7 +123,7 @@ var getChoiceHandler = function (component, callback) {
     return func;
 };
 
-var getCustomFunctionHandler = function (component, callback) {
+function getCustomFunctionHandler (component, callback) {
     var func = function(req, res) {
         var obj = require(component.require);
         eval('obj.' + component.function + '(req, res, callback)');
@@ -115,7 +131,7 @@ var getCustomFunctionHandler = function (component, callback) {
     return func;
 };
 
-var getCustomErrorHandlerHandler = function (component) {
+function getCustomErrorHandlerHandler (component) {
     var func = function(err, req, res, next) {
         var obj = require(component.require);
         eval('obj.' + component.function + '(err, req, res, next)');
@@ -123,16 +139,9 @@ var getCustomErrorHandlerHandler = function (component) {
     return func;
 };
 
-var getSendResponseHandler = function () {
-    var func = function(req, res) {
-        res.send(res.getPayload());
-    };
-    return func;
-};
-
-exports.getRouteHandler = getRouteHandler;
-exports.getComponentFunction = getComponentFunction;
-exports.getSendResponseHandler = getSendResponseHandler;
+//
+// Utility functions
+//
 
 /**
 * Convert a type (from the JSON config) to a function name. Example:
