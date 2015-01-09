@@ -3,11 +3,14 @@
 var fs = require('fs');
 var _ = require('underscore/underscore');
 
-module.exports = function (appConfig) {
-    return new FunctionFactory(appConfig);
+var appConfig;
+
+module.exports = function (config) {
+    appConfig = config;
+    return new FunctionFactory();
 }
 
-function FunctionFactory (appConfig) {
+function FunctionFactory () {
     
     /**
     * The base function that the app uses to handle the request for a given route
@@ -19,18 +22,8 @@ function FunctionFactory (appConfig) {
         return func;
     };
     
-    /**
-    * Convert the component type to a function and eval it.
-    * Example: setHeaders > getSetHeadersHandler(component, callback)
-    */
-    this.getComponentFunction = function (component, callback) {
-        // If component is a string, it's a reference to a globally-defined component.
-        if (typeof component === 'string') {
-            component = appConfig.globalComponents[component];
-        }
-        var func = eval(typeToFunctionName(component.type) + '(component, callback)');
-        return {func: func, type: component.type};
-    };
+    // Get the component function by type.
+    this.getComponentFunction = getComponentFunction;
     
     /**
     * The final function that sends the reponse
@@ -48,10 +41,27 @@ function FunctionFactory (appConfig) {
 // Function factory functions
 //
 
+/**
+* Get a component function by type.
+* Converts the component type to a function and eval's it.
+* Example: setHeaders > getSetHeadersHandler(component, callback)
+*
+*/
+function getComponentFunction (component, callback) {
+    // If component is a string, it's a reference to a globally-defined component.
+    if (typeof component === 'string') {
+        component = appConfig.globalComponents[component];
+    }
+    var func = eval(typeToFunctionName(component.type) + '(component, callback)');
+    return {func: func, type: component.type};
+};
+
+// Specific component functions from here down
+
 function getSetVariableHandler (component, callback) {
     var func = function(req, res) {
         res.setVariable(component.name, evalString(component.value, req, res));
-        callback(req, res);
+        if (callback) callback(req, res);
     };
     return func;
 };
@@ -59,7 +69,7 @@ function getSetVariableHandler (component, callback) {
 function getSetHeadersHandler (component, callback) {
     var func = function(req, res) {
         res.set(component.headers);
-        callback(req, res);
+        if (callback) callback(req, res);
     };
     return func;
 };
@@ -67,7 +77,7 @@ function getSetHeadersHandler (component, callback) {
 function getSetPayloadHandler (component, callback) {
     var func = function(req, res) {
         res.setPayload(evalString(component.value, req, res));
-        callback(req, res);
+        if (callback) callback(req, res);
     };
     return func;
 };
@@ -75,7 +85,7 @@ function getSetPayloadHandler (component, callback) {
 function getLoggerHandler (component, callback) {
     var func = function(req, res) {
         console.log(evalString(component.message, req, res));
-        callback(req, res);
+        if (callback) callback(req, res);
     };
     return func;
 };
@@ -102,7 +112,7 @@ function getParseTemplateHandler (component, callback) {
         } else {
             res.setVariable(component.file, parsed);
         }
-        callback(req, res);
+        if (callback) callback(req, res);
     };
     return func;
 };
@@ -114,11 +124,12 @@ function getChoiceHandler (component, callback) {
             condition = component.conditions[i];
             var result = evalString(condition.if, req, res);
             if (result) {
-                evalString(condition.then, req, res);
+                var cb = buildCallbackChain(condition.then);
+                if (cb) cb(req, res);
                 break;
             }
         }
-        callback(req, res);
+        if (callback) callback(req, res);
     };
     return func;
 };
@@ -149,6 +160,20 @@ function getCustomErrorHandlerHandler (component) {
 */
 function typeToFunctionName (type) {
     return 'get' + type.charAt(0).toUpperCase() + type.substring(1) + 'Handler';
+}
+
+/**
+* Given an array of components, create the callback chain starting at the end and working back.
+*/
+function buildCallbackChain (components) {
+    var func,
+        numComponents = components.length;
+    for (var i = numComponents - 1; i >= 0; i--) {
+        var component = components[i];
+        var obj = getComponentFunction(component, func);
+        func = obj.func;
+    }
+    return func;
 }
 
 /**

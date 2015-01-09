@@ -10,6 +10,10 @@
         "setHeadersLogger": {
             "type": "logger",
             "message": "Headers: $$JSON.stringify(res._headers)$$"
+        },
+        "responseVariableLogger": {
+            "type": "logger",
+            "message": "ID: $$res.getVariable('response')$$"
         }
     },    
     "apps": [
@@ -115,21 +119,38 @@
                             "conditions": [
                                 {
                                     "if": "$$req.getParam('id') === 'hello'$$",
-                                    "then": "$$res.setVariable('response', 'HELLO')$$"
+                                    "then": [
+                                        {
+                                            "type": "setVariable",
+                                            "name": "response",
+                                            "value": "HELLO"
+                                        },
+                                        "responseVariableLogger"
+                                    ]
                                 },
                                 {
                                     "if": "$$req.getParam('id') === 'hello2'$$",
-                                    "then": "$$res.setVariable('response', 'HELLO2')$$"
+                                    "then": [
+                                        {
+                                            "type": "setVariable",
+                                            "name": "response",
+                                            "value": "HELLO2"
+                                        },
+                                        "responseVariableLogger"
+                                    ]
                                 },
                                 {
                                     "if": "$$true$$",
-                                    "then": "$$res.setVariable('response', 'Invalid param: ' + req.getParam('id'))$$"
+                                    "then": [
+                                        {
+                                            "type": "setVariable",
+                                            "name": "response",
+                                            "value": "Invalid param: $$req.getParam('id')$$"
+                                        },
+                                        "responseVariableLogger"
+                                    ]
                                 }
                             ]
-                        },
-                        {
-                            "type": "logger",
-                            "message": "ID: $$res.getVariable('response')$$"
                         },
                         {
                             "type": "setPayload",
