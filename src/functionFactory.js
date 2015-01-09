@@ -117,14 +117,23 @@ function getParseTemplateHandler (component, callback) {
     return func;
 };
 
+// There are some places here where we should use let instead of var in ES6
 function getChoiceHandler (component, callback) {
+    
+    // We first need to build the callback chains for each choice. We'll put them in an array for use in the function below.
+    var callbackChains = [];
+    for (var i in component.conditions) {
+        var condition = component.conditions[i];
+        callbackChains.push(buildCallbackChain(condition.then));
+    }
+    
     var func = function(req, res) {
         var condition;
         for (var i in component.conditions) {
             condition = component.conditions[i];
             var result = evalString(condition.if, req, res);
             if (result) {
-                var cb = buildCallbackChain(condition.then);
+                var cb = callbackChains[i];
                 if (cb) cb(req, res);
                 break;
             }
@@ -132,6 +141,7 @@ function getChoiceHandler (component, callback) {
         if (callback) callback(req, res);
     };
     return func;
+    
 };
 
 function getCustomFunctionHandler (component, callback) {
