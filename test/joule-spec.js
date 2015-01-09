@@ -76,6 +76,15 @@ describe("Joule test Suite", function() {
         });
     });
     
+    it("tests genericErrorHandler", function(done) {
+        getURL('curl -i http://localhost:8081/genericErrorHandler')
+        .then(function (response) {
+            expect(response.headers['HTTP/1.1 500 Internal Server Error']).toBeDefined();
+            expect(response.body).toMatch("ENOENT, no such file or directory 'non-existent-file-to-force-an-error'");
+            done();
+        });
+    });
+    
     for (var property in choiceParams) {
         if (choiceParams.hasOwnProperty(property)) {
             it("tests choiceHandler", function(done) {

@@ -17,81 +17,57 @@ var functionFactory = require('./functionFactory');
 
 var appConfig = initConfig(),
     i = 0, 
-    connector,
-    app,
     j = 0,
-    route,
-    k = 0,
-    component,
-    func;
+    k = 0;
 
 for (i in appConfig.apps) {
-   
-    connector = appConfig.apps[i];
-    app = createExpressApplication(connector);
+    
+    // NOTE: We should use let in these for-loops instead of var with ES6
+    var connector = appConfig.apps[i];
+    var app = createExpressApplication(connector);
     
     for (j in connector.routes) {
         
-        route = connector.routes[j];
-        functionFactory.getRouteHandler(app, route);
+        var route = connector.routes[j];
+        var customErrorHandler = null;
         
-        var customErrorHandler = false;
-        for (k in route.components) {
+        // We work backwards through the components so we're able to tell each function which callback to call next.
+        // So we start with the sendResponse handler, which is the last function in the chain.
+        var func = functionFactory.getSendResponseHandler();
+        
+        // Loop backwards through the components, building the callback chain.
+        var numComponents = route.components.length;
+        for (k = numComponents - 1; k >= 0; k--) {
             
-            component = route.components[k];
+            var component = route.components[k];
+            var obj = functionFactory.getComponentFunction(component, appConfig.globalComponents, func);
             
-            // If component is a string, it's a reference to a globally-defined component.
-            if (typeof component === 'string') {
-                component = getGlobalComponent(component);
-            }
-            
-            // Convert the component type to a function and eval it.
-            // Example: setHeaders > functionFactory.getSetHeadersHandler(app, route, component)
-            func = eval('functionFactory.' + typeToFunctionName(component.type) + '(component)');
-            
-            // Attach the function to the app
-            app.use(route.path, func);
-            
-            // If the user has supplied their own error handler, flag it here.
-            if (component.type === 'customErrorHandler') {
-                customErrorHandler = true;
+            // If the user has supplied their own error handler, store it here. Else, set func to the returned function.
+            if (obj.type === 'customErrorHandler') {
+                customErrorHandler = obj.func;
+            } else {
+                func = obj.func;
             }
             
         }
         
-        // Finally, attach the send response handler.
-        func = functionFactory.getSendResponseHandler();
-        app.use(route.path, func);
+        // Now that we've build the callback chain, get the route handler, and attach it to the app.
+        var routeHandler = functionFactory.getRouteHandler(func);
+        route.method = route.method || 'get';
+        eval('app.' + route.method.toLowerCase() + '(route.path, routeHandler)');
+        
+        // If a custom error handler has been configured, 'use' it. Else, use a generic error handler.
+        if (customErrorHandler) {
+            app.use(route.path, customErrorHandler);
+        } else {
+            app.use(route.path, function(err, req, res, next) {
+                console.error(err.stack);
+                res.status(500).send(err.message);
+            });
+        }
         
     }
     
-    // If no custom error handler has been configured, use a default error handler last to catch, log, and return an appropriate response.
-    if (!customErrorHandler) {
-        app.use(function(err, req, res, next) {
-            if (!err) {
-                return next();
-            }
-            console.error(err.stack);
-            res.status(500).send(err.message);
-        });
-    }
-    
-}
-
-/**
-* Get a globally-defined component
-*/
-function getGlobalComponent (id) {
-    return appConfig.components[id];
-}
-
-/**
-* Convert a type (from the JSON config) to a function name. Example:
-* 
-* setHeaders > getSetHeadersHandler
-*/
-function typeToFunctionName (type) {
-    return 'get' + type.charAt(0).toUpperCase() + type.substring(1) + 'Handler';
 }
 
 function initConfig () {

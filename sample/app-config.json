@@ -1,5 +1,5 @@
 {
-    "components": {
+    "globalComponents": {
         "setHeaders": {
             "type": "setHeaders",
             "headers": {
@@ -94,6 +94,16 @@
                             "type": "customErrorHandler",
                             "require": "../sample/sampleCustomFunctions",
                             "function": "errorHandler"
+                        }
+                    ]
+                },
+                {
+                    "path": "/genericErrorHandler",
+                    "components": [
+                        {
+                            "type": "parseTemplate",
+                            "file": "non-existent-file-to-force-an-error",
+                            "attrs": {}
                         }
                     ]
                 },
