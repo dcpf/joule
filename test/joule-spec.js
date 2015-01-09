@@ -8,11 +8,11 @@ var q = require('q');
 //
 
 var testParams = ['test1','test2','test1','testing'];
-var choiceParams = {
-    'hello': 'HELLO',
-    'hello2': 'HELLO2',
-    'hello3': 'Invalid param: hello3'
-};
+var choiceParams = [
+    ['hello', 'HELLO'],
+    ['hello2', 'HELLO2'],
+    ['hello3', 'Invalid param: hello3']
+];
 
 //
 // Tests
@@ -85,17 +85,15 @@ describe("Joule test Suite", function() {
         });
     });
     
-    for (var property in choiceParams) {
-        if (choiceParams.hasOwnProperty(property)) {
-            it("tests choiceHandler", function(done) {
-                getURL('curl -i http://localhost:8081/choiceHandler?id=' + property)
-                .then(function (response) {
-                    expect(response.body).toEqual(choiceParams[property]);
-                    done();
-                });
+    choiceParams.forEach(function(element, index, array) {
+        it("tests choiceHandler", function(done) {
+            getURL('curl -i http://localhost:8081/choiceHandler?id=' + element[0])
+            .then(function (response) {
+                expect(response.body).toEqual(element[1]);
+                done();
             });
-        }
-    }
+        });
+    });
     
     it("tests 404 Not Found", function(done) {
         getURL('curl -i http://localhost:8081/whatever')
