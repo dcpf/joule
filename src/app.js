@@ -51,10 +51,11 @@ for (i in appConfig.apps) {
             
         }
         
-        // Now that we've build the callback chain, get the route handler, and attach it to the app.
+        // Now that we've built the callback chain, get the route handler, and attach it to the app.
         var routeHandler = functionFactory.getRouteHandler(func);
         route.method = route.method || 'get';
         eval('app.' + route.method.toLowerCase() + '(route.path, routeHandler)');
+        console.log('Registered route: ' + route.path);
         
         // If a custom error handler has been configured, 'use' it. Else, use a generic error handler.
         if (customErrorHandler) {
@@ -88,6 +89,7 @@ function initConfig () {
 */
 function createExpressApplication (connector) {
     
+    console.log('Starting app on ' + connector.host + ':' + connector.port);
     var app = express();
     app.set('host', connector.host);
     app.set('port', connector.port);
