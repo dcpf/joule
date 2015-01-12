@@ -1,7 +1,10 @@
 module.exports.customFunction = function (req, res, callback) {
-    console.log('in custom function');
-    res.setVariable('myVar', 'this is a test');
-    callback(req, res);
+    // Use setTimeout to prove that async function calls work within the framework
+    setTimeout(function(){
+        console.log('in custom function');
+        res.setVariable('myVar', 'this is a test');
+        callback(req, res);
+    }, 1000);
 }
 
 module.exports.errorHandler = function (err, req, res, next) {
