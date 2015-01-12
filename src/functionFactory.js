@@ -61,7 +61,7 @@ function getComponentFunction (component, callback) {
 function getSetVariableHandler (component, callback) {
     var func = function(req, res) {
         res.setVariable(component.name, evalString(component.value, req, res));
-        if (callback) callback(req, res);
+        callback(req, res);
     };
     return func;
 };
@@ -69,7 +69,7 @@ function getSetVariableHandler (component, callback) {
 function getSetHeadersHandler (component, callback) {
     var func = function(req, res) {
         res.set(component.headers);
-        if (callback) callback(req, res);
+        callback(req, res);
     };
     return func;
 };
@@ -77,7 +77,7 @@ function getSetHeadersHandler (component, callback) {
 function getSetPayloadHandler (component, callback) {
     var func = function(req, res) {
         res.setPayload(evalString(component.value, req, res));
-        if (callback) callback(req, res);
+        callback(req, res);
     };
     return func;
 };
@@ -85,7 +85,7 @@ function getSetPayloadHandler (component, callback) {
 function getLoggerHandler (component, callback) {
     var func = function(req, res) {
         console.log(evalString(component.message, req, res));
-        if (callback) callback(req, res);
+        callback(req, res);
     };
     return func;
 };
@@ -112,7 +112,7 @@ function getParseTemplateHandler (component, callback) {
         } else {
             res.setVariable(component.file, parsed);
         }
-        if (callback) callback(req, res);
+        callback(req, res);
     };
     return func;
 };
@@ -124,7 +124,8 @@ function getChoiceHandler (component, callback) {
     var callbackChains = [];
     for (var i in component.conditions) {
         var condition = component.conditions[i];
-        callbackChains.push(buildCallbackChain(condition.then));
+        // Note that the passed-in callback will be called after the callback chain is finished.
+        callbackChains.push(buildCallbackChain(condition.then, callback));
     }
     
     var func = function(req, res) {
@@ -134,11 +135,10 @@ function getChoiceHandler (component, callback) {
             var result = evalString(condition.if, req, res);
             if (result) {
                 var cb = callbackChains[i];
-                if (cb) cb(req, res);
+                cb(req, res);
                 break;
             }
         }
-        if (callback) callback(req, res);
     };
     return func;
     
@@ -174,10 +174,13 @@ function typeToFunctionName (type) {
 
 /**
 * Given an array of components, create the callback chain starting at the end and working back.
+* The passed-in function will be called as the last function in the chain.
+*
+* @param list of components
+* @param callback function to call after the last callback in the chain
 */
-function buildCallbackChain (components) {
-    var func,
-        numComponents = components.length;
+function buildCallbackChain (components, func) {
+    var numComponents = components.length;
     for (var i = numComponents - 1; i >= 0; i--) {
         var component = components[i];
         var obj = getComponentFunction(component, func);

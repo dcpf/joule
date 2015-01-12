@@ -10,10 +10,6 @@
         "setHeadersLogger": {
             "type": "logger",
             "message": "Headers: $$JSON.stringify(res._headers)$$"
-        },
-        "responseVariableLogger": {
-            "type": "logger",
-            "message": "ID: $$res.getVariable('response')$$"
         }
     },    
     "apps": [
@@ -124,8 +120,7 @@
                                             "type": "setVariable",
                                             "name": "response",
                                             "value": "HELLO"
-                                        },
-                                        "responseVariableLogger"
+                                        }
                                     ]
                                 },
                                 {
@@ -135,8 +130,7 @@
                                             "type": "setVariable",
                                             "name": "response",
                                             "value": "HELLO2"
-                                        },
-                                        "responseVariableLogger"
+                                        }
                                     ]
                                 },
                                 {
@@ -146,11 +140,14 @@
                                             "type": "setVariable",
                                             "name": "response",
                                             "value": "Invalid param: $$req.getParam('id')$$"
-                                        },
-                                        "responseVariableLogger"
+                                        }
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            "type": "logger",
+                            "message": "ID: $$res.getVariable('response')$$"
                         },
                         {
                             "type": "setPayload",
