@@ -83,6 +83,22 @@
                     ]
                 },
                 {
+                    "path": "/webServiceConsumer",
+                    "components": [
+                        {
+                            "type": "webServiceConsumer",
+                            "method": "get",
+                            "endPoint": "http://api.data.gov/census/american-community-survey/v1/2011/populations/states?api_key=DEMO_KEY",
+                            "responseType": "json",
+                            "setPayload": true
+                        },
+                        {
+                            "type": "logger",
+                            "message": "response: $$res.getPayload()$$"
+                        }
+                    ]
+                },
+                {
                     "path": "/customErrorHandler",
                     "components": [
                         {

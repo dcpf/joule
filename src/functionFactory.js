@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var request = require('request');
 var _ = require('underscore/underscore');
 
 var appConfig;
@@ -117,6 +118,35 @@ function getParseTemplateHandler (component, callback) {
             res.setVariable(component.file, parsed);
         }
         callback(req, res);
+    };
+    return func;
+};
+
+function getWebServiceConsumerHandler (component, callback) {
+    var func = function(req, res) {
+        request(
+            {
+                method: component.method,
+                url: component.endPoint
+            },
+            function (err, response, body) {
+                if (err) {
+                    console.log("error: " + err);
+                    // TODO: do something here
+                } else {
+                    if (component.responseType === 'json') {
+                        body = JSON.parse(body);
+                    }
+                    if (component.setPayload) {
+                        res.setPayload(body);
+                    }
+                    if (component.varName) {
+                        res.setVariable(component.varName, body);
+                    }
+                }
+                callback(req, res);
+            }
+        );
     };
     return func;
 };
