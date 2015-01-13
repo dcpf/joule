@@ -39,6 +39,15 @@ describe("Joule test Suite", function() {
         });
     });
     
+    it("tests json output", function(done) {
+        getURL('curl -i http://localhost:8082/json')
+        .done(function (response) {
+            expect(response.headers['Content-Type']).toEqual('application/json; charset=utf-8');
+            expect(response.body).toEqual('{"1":"test","2":"test2"}');
+            done();
+        });
+    });
+    
     it("tests customFunction", function(done) {
         getURL('curl -i http://localhost:8081/customFunction')
         .done(function (response) {

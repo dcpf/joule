@@ -162,20 +162,14 @@
             "port": 8082,
             "routes": [
                 {
-                    "path": "/hello",
+                    "path": "/json",
                     "components": [
                         {
                             "type": "setPayload",
-                            "value": "Hello World 3"
-                        }
-                    ]
-                },
-                {
-                    "path": "/hello2",
-                    "components": [
-                        {
-                            "type": "setPayload",
-                            "value": "Hello World 4"
+                            "value": {
+                                "1": "test",
+                                "2": "test2"
+                            }
                         }
                     ]
                 }

@@ -76,7 +76,11 @@ function getSetHeadersHandler (component, callback) {
 
 function getSetPayloadHandler (component, callback) {
     var func = function(req, res) {
-        res.setPayload(evalString(component.value, req, res));
+        if (typeof component.value === 'string') {
+            res.setPayload(evalString(component.value, req, res));
+        } else {
+            res.setPayload(component.value);
+        }
         callback(req, res);
     };
     return func;
