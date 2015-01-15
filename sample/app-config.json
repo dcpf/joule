@@ -99,6 +99,18 @@
                     ]
                 },
                 {
+                    "path": "/webServiceConsumerBadEndPoint",
+                    "components": [
+                        {
+                            "type": "webServiceConsumer",
+                            "method": "get",
+                            "endPoint": "http://bad.domain.kom",
+                            "responseType": "json",
+                            "setPayload": true
+                        }
+                    ]
+                },
+                {
                     "path": "/customErrorHandler",
                     "components": [
                         {
