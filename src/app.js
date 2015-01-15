@@ -11,7 +11,6 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var cookieParser = require('cookie-parser');
 var compression = require('compression');
-var errorHandler = require('errorhandler');
 
 var appConfig = initConfig();
 var functionFactory = require('./functionFactory')(appConfig);
@@ -52,20 +51,10 @@ for (i in appConfig.apps) {
         }
         
         // Now that we've built the callback chain, get the route handler, and attach it to the app.
-        var routeHandler = functionFactory.getRouteHandler(func);
+        var routeHandler = functionFactory.getRouteHandler(func, customErrorHandler);
         route.method = route.method || 'get';
         eval('app.' + route.method.toLowerCase() + '(route.path, routeHandler)');
         console.log('Registered route: ' + route.path);
-        
-        // If a custom error handler has been configured, 'use' it. Else, use a generic error handler.
-        if (customErrorHandler) {
-            app.use(route.path, customErrorHandler);
-        } else {
-            app.use(route.path, function(err, req, res, next) {
-                console.error(err.stack);
-                res.status(500).send(err.message);
-            });
-        }
         
     }
     
@@ -139,6 +128,10 @@ function enhanceRequest (req, res, next) {
     res.getPayload = function () {
         return res.locals._joule.payload;
     };
+    
+    res.setError = function (err) {
+        res.locals._joule.deferred.reject(err);
+    }
 
     // Get the passed-in params (for either GET, POST or route params), and make them available via req.getParam() and req.getParams()
     var params = {};

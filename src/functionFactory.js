@@ -3,6 +3,7 @@
 var fs = require('fs');
 var request = require('request');
 var _ = require('underscore/underscore');
+var q = require('q');
 
 var appConfig;
 
@@ -16,8 +17,15 @@ function FunctionFactory () {
     /**
     * The base function that the app uses to handle the request for a given route
     */
-    this.getRouteHandler = function (callback) {
+    this.getRouteHandler = function (callback, errorHandler) {
+        errorHandler = errorHandler || getGenericErrorHandler();
         var func = function(req, res) {
+            // Create the deferred object, setup the fail condition to call the error handler, and set it on the response object.
+            var deferred = q.defer();
+            res.locals._joule.deferred = deferred;
+            deferred.promise.fail(function(err){
+                errorHandler(req, res, err);
+            });
             callback(req, res);
         };
         return func;
@@ -103,7 +111,12 @@ function getParseTemplateHandler (component, callback) {
         if (!template) {
             console.log('Getting ' + component.file + ' template from disk');
             // TODO: Use let with ES6
-            var file = fs.readFileSync(component.file, {encoding: encoding});
+            try {
+                var file = fs.readFileSync(component.file, {encoding: encoding});
+            } catch (e) {
+                res.setError(e);
+                return;
+            }
             template = _.template(file);
             templateCache[component.file] = template;
         }
@@ -131,8 +144,8 @@ function getWebServiceConsumerHandler (component, callback) {
             },
             function (err, response, body) {
                 if (err) {
-                    console.log("error: " + err);
-                    // TODO: do something here
+                    res.setError(err);
+                    return;
                 } else {
                     if (component.responseType === 'json') {
                         body = JSON.parse(body);
@@ -187,9 +200,17 @@ function getCustomFunctionHandler (component, callback) {
 };
 
 function getCustomErrorHandlerHandler (component) {
-    var func = function(err, req, res, next) {
+    var func = function(req, res, err) {
         var obj = require(component.require);
-        eval('obj.' + component.function + '(err, req, res, next)');
+        eval('obj.' + component.function + '(req, res, err)');
+    };
+    return func;
+};
+
+function getGenericErrorHandler () {
+    var func = function(req, res, err) {
+        console.error(err.stack);
+        res.status(500).send(err.message);
     };
     return func;
 };
