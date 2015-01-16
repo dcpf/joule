@@ -1,5 +1,11 @@
 'use strict';
 
+var cmndr = require('commander');
+
+cmndr
+  .option('-c, --configFile <configFile>', 'Specify the config file to use')
+  .parse(process.argv);
+
 var fs = require('fs');
 var path = require('path');
 var events = require('events');
@@ -61,7 +67,7 @@ for (i in appConfig.apps) {
 }
 
 function initConfig () {
-    var configFile = process.argv[2] || 'app-config.json';
+    var configFile = cmndr.configFile;
     var config = {};
     try {
         console.log('Loading config file: ' + configFile);
