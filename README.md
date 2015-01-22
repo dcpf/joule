@@ -2,6 +2,29 @@
 
 Inspired by Mule (http://www.mulesoft.com), Joule is a collection of built-in configurable components that help you get your REST service up and running quickly! These components include common things like setting headers and variables, logging, file parsing, consuming external web services, etc. Joule also takes care of all of the scaffolding and setup required for a REST service, letting you concentrate on your own code, configured as custom components. Read on to see how easy it is to create a REST service with Joule.
 
+## Table of Contents
+* [Configuration](#Configuration)
+	* [Routes](#Routes)
+	* [Components](#Components)
+		* [SetHeaders](#SetHeaders)
+        * [SetVariable](#SetVariable)
+        * [Logger](#Logger)
+        * [ParseTemplate](#ParseTemplate)
+        * [WebServiceConsumer](#WebServiceConsumer)
+        * [Choice](#Choice)
+        * [CustomFunction](#CustomFunction)
+        * [SetPayload](#SetPayload)
+        * [CustomErrorHandler](#CustomErrorHandler)
+    * [GlobalComponents](#GlobalComponents)
+* [Enhancements to request and response objects](#enhancements-to-request-and-response-objects)
+    * [req.getParam()](#reqgetParam
+    * [req.getParams()](#reqgetParams
+    * [res.setVariable()](#ressetVariable
+    * [res.getVariable()](#resgetVariable)
+    * [res.setPayload()](#ressetPayload
+    * [res.getPayload()](#resgetPayload
+    * [res.setError()](#ressetError
+
 ## Configuration
 
 A Joule app is configured via a JSON config file where you define your app, it's routes, and the component flow for each route. A simple example of this is:
