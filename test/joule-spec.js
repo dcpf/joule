@@ -85,9 +85,20 @@ describe("Joule test Suite", function() {
         });
     });
     
-    // This is really an integration test and will fail if no internet connection.
+    // These webServiceConsumer tests are really integration tests and will fail if no internet connection.
+    
     it("tests webServiceConsumer", function(done) {
         getURL('curl -i http://localhost:8081/webServiceConsumer')
+        .then(function (response) {
+            expect(response.headers['Content-Type']).toEqual('application/json; charset=utf-8');
+            var obj = JSON.parse(response.body);
+            expect(obj.length).toEqual(53);
+            done();
+        });
+    });
+    
+    it("tests webServiceConsumerDynamicUrl", function(done) {
+        getURL('curl -i http://localhost:8081/webServiceConsumerDynamicUrl?year=2012')
         .then(function (response) {
             expect(response.headers['Content-Type']).toEqual('application/json; charset=utf-8');
             var obj = JSON.parse(response.body);

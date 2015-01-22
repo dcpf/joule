@@ -198,6 +198,18 @@ Same as above but stores the parsed output in a variable called statePolpulation
 }
 ```
 
+The endPoint can also contain javascript expressions. In this example, the year can be passed in as a request parameter:
+
+```
+{
+    "type": "webServiceConsumer",
+    "method": "get", // Optional. If not supplied, 'get' will be used by default.
+    "endPoint": "http://api.data.gov/census/american-community-survey/v1/$$req.getParam('year')$$/populations/states?api_key=DEMO_KEY",
+    "responseType": "json",
+    "setPayload": true
+}
+```
+
 #### Choice
 The choice component lets you dynamically decide what to do based on the outcome of the conditions you define. Each condition contains an 'if' attribute with your logic (surrouned by $$ tokens as seen above). The 'then' attribute can contain one or more components to call based on the outcome of the 'if' logic. If a condition's logic evaluates to true, the components defined in the 'then' attribute will be called, in order. All other conditions will be ignored. A final condition with '$$true$$' for the 'if' attribute acts as the default condition to perform if no others evaluated to true.
 

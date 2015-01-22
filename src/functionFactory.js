@@ -142,7 +142,7 @@ function getWebServiceConsumerHandler (component, callback) {
         request(
             {
                 method: method,
-                url: component.endPoint
+                url: evalString(component.endPoint, req, res)
             },
             function (err, response, body) {
                 if (err) {

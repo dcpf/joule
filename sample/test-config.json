@@ -98,6 +98,21 @@
                     ]
                 },
                 {
+                    "path": "/webServiceConsumerDynamicUrl",
+                    "components": [
+                        {
+                            "type": "webServiceConsumer",
+                            "endPoint": "http://api.data.gov/census/american-community-survey/v1/$$req.getParam('year')$$/populations/states?api_key=DEMO_KEY",
+                            "responseType": "json",
+                            "setPayload": true
+                        },
+                        {
+                            "type": "logger",
+                            "message": "response: $$res.getPayload()$$"
+                        }
+                    ]
+                },
+                {
                     "path": "/webServiceConsumerBadEndPoint",
                     "components": [
                         {
