@@ -61,7 +61,7 @@ Joule sits on top of ExpressJS, so routing configuration follows ExpressJS conve
 
 That's really it for the app and route configuration. Let's dive into the components!
 
-### Components 
+## Components 
 
 #### SetHeaders
 Sets the headers on the response. Example:
@@ -316,7 +316,8 @@ module.exports.myErrorHandler = function (req, res, err) {
 }
 ```
 
-### GlobalComponents
+## GlobalComponents
+
 You may find the need to configure the same type of component(s) with the same attribute(s) over and over again (e.g., a setHeader component for setting no-cache headers). To aid with this, Joule supports the notion of global components. Simply define these components in the globalComponents namespace, and you can then reference them elsewhere in the configuration. In this example, we define two global components with the names/IDs setNoCacheHeaders and setHeadersLogger:
 
 ```
@@ -354,7 +355,7 @@ We can then reference these in a component flow like so:
 
 As you can see, we first set the no-cache headers, then the headers logger, and finally, we set the payload.
 
-### Enhancements to request and response objects
+## Enhancements to request and response objects
 
 Joule modifies the request and response objects with the following handy functions:
 
