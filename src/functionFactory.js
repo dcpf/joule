@@ -127,8 +127,9 @@ function getParseTemplateHandler (component, callback) {
         var parsed = template(attrs);
         if (component.setPayload) {
             res.setPayload(parsed);
-        } else {
-            res.setVariable(component.file, parsed);
+        }
+        if (component.varName) {
+            res.setVariable(component.varName, parsed);
         }
         callback(req, res);
     };
@@ -137,9 +138,10 @@ function getParseTemplateHandler (component, callback) {
 
 function getWebServiceConsumerHandler (component, callback) {
     var func = function(req, res) {
+        var method = component.method || 'get';
         request(
             {
-                method: component.method,
+                method: method,
                 url: component.endPoint
             },
             function (err, response, body) {
