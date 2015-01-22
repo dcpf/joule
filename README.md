@@ -157,7 +157,7 @@ Make a get request to an endPoint, expecting the response type to be JSON. Setti
 ```
 {
     "type": "webServiceConsumer",
-    "method": "get", // Optional. If not supplied, 'get' will be used by default
+    "method": "get", // Optional. If not supplied, 'get' will be used by default.
     "endPoint": "http://api.data.gov/census/american-community-survey/v1/2011/populations/states?api_key=DEMO_KEY",
     "responseType": "json",
     "setPayload": true
