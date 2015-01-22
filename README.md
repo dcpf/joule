@@ -17,13 +17,13 @@ Inspired by Mule (http://www.mulesoft.com), Joule is a collection of built-in co
         * [CustomErrorHandler](#CustomErrorHandler)
     * [GlobalComponents](#GlobalComponents)
 * [Enhancements to request and response objects](#enhancements-to-request-and-response-objects)
-    * [req.getParam()](#reqgetParam
-    * [req.getParams()](#reqgetParams
-    * [res.setVariable()](#ressetVariable
+    * [req.getParam()](#reqgetParam)
+    * [req.getParams()](#reqgetParams)
+    * [res.setVariable()](#ressetVariable)
     * [res.getVariable()](#resgetVariable)
-    * [res.setPayload()](#ressetPayload
-    * [res.getPayload()](#resgetPayload
-    * [res.setError()](#ressetError
+    * [res.setPayload()](#ressetPayload)
+    * [res.getPayload()](#resgetPayload)
+    * [res.setError()](#ressetError)
 
 ## Configuration
 
