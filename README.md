@@ -1,6 +1,6 @@
 # Joule
 
-Inspired by Mule (http://www.mulesoft.com), Joule is a collection of built-in configurable components that help you get your REST service up and running quickly! These components include common things like setting headers and variables, logging, file parsing, consuming external web services, etc. Joule also takes care of all of the scaffolding and setup required for a REST service, letting you concentrate on your own code, configured as custom components. Read on to see how easy it is to create a REST service with Joule.
+Inspired by Mule (http://www.mulesoft.com), Joule is a collection of built-in configurable components that help you get your REST service up and running quickly! These components include common things like setting headers and variables, logging, file parsing, consuming external web services, etc. Joule also supports custom components, allowing you to write your own code and inject it anywhere in the component flow. Joule takes care of all of the scaffolding and setup required for a REST service, letting you concentrate on your own code. Read on to see how easy it is to create a REST service with Joule!
 
 ## Table of Contents
 * [Configuration](#configuration)
@@ -27,7 +27,7 @@ Inspired by Mule (http://www.mulesoft.com), Joule is a collection of built-in co
 
 ## Configuration
 
-A Joule app is configured via a JSON config file where you define your app, it's routes, and the component flow for each route. A simple example of this is:
+A Joule app is configured via a JSON config file where you define your app, its routes, and the component flow for each route. Here's an example where we define two apps, one running on port 8081, and one running on 8082. Each app has a /hello route defined.
 
 ```
 {
@@ -68,8 +68,6 @@ A Joule app is configured via a JSON config file where you define your app, it's
 }
 ```
 
-Here we have defined two apps, one running on port 8081, and one running on 8082. Each app has a /hello route defined.
-
 Hitting http://localhost:8081/hello will respond with the plain text string:
 
 `Hello World!`
@@ -82,7 +80,7 @@ Hitting http://localhost:8082/hello will respond with a json object:
 
 Joule sits on top of ExpressJS, so routing configuration follows ExpressJS conventions. I.e, any route supported by ExpressJS is also supported by Joule.
 
-That's really it for the app and route configuration. Let's dive into the components!
+That's really it for the app and route configuration. Let's dive into the heart of Joule - components!
 
 ## Components 
 
