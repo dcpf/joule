@@ -1,8 +1,13 @@
 {
   "name": "joule",
-  "version": "0.0.0",
-  "description": "Node implementation of Mule",
+  "version": "0.1.0",
+  "description": "Node-based implementation of Mule",
   "main": "/",
+  "keywords": [
+      "rest",
+      "service",
+      "mule"
+  ],
   "dependencies": {
     "body-parser": "^1.10.0",
     "commander": "^2.6.0",
@@ -22,7 +27,7 @@
     "type": "git",
     "url": "https://github.com/dcpf/joule.git"
   },
-  "author": "David Piersol-Freedman",
+  "author": "David Piersol-Freedman <dpf@theworld.com>",
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/dcpf/joule/issues"
