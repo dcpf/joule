@@ -67,41 +67,29 @@ App listening on localhost:8082
 
 Once the app is running, you can try hitting the various sample/test end-points to see their output (note that some of these set custom headers).
 
-http://localhost:8081/setHeaders
-
-http://localhost:8081/setVariable?id=testId
-
-http://localhost:8082/json
-
-http://localhost:8081/customFunction
-
-http://localhost:8081/parseTemplate?id=testId
-
-http://localhost:8081/parseTemplate2/testId
-
-http://localhost:8081/customErrorHandler
-
-http://localhost:8081/webServiceConsumer
-
-http://localhost:8081/webServiceConsumerDynamicUrl?year=2012
-
-http://localhost:8081/webServiceConsumerBadEndPoint
-
-http://localhost:8081/genericErrorHandler
-
-http://localhost:8081/choiceHandler?id=hello
-
-http://localhost:8081/choiceHandler?id=hello2
-
-http://localhost:8081/choiceHandler?id=hello3
-
-http://localhost:8081/whatever
+* http://localhost:8081/setHeaders
+* http://localhost:8081/setVariable?id=testId
+* http://localhost:8082/json
+* http://localhost:8081/customFunction
+* http://localhost:8081/parseTemplate?id=testId
+* http://localhost:8081/parseTemplate2/testId
+* http://localhost:8081/customErrorHandler
+* http://localhost:8081/webServiceConsumer
+* http://localhost:8081/webServiceConsumerDynamicUrl?year=2012
+* http://localhost:8081/webServiceConsumerBadEndPoint
+* http://localhost:8081/genericErrorHandler
+* http://localhost:8081/choiceHandler?id=hello
+* http://localhost:8081/choiceHandler?id=hello2
+* http://localhost:8081/choiceHandler?id=hello3
+* http://localhost:8081/whatever
 
 You can take a look at node_modules/joule/sample/test-config.json to see how each of these end-points are configured and also see the documentation below. 
 
 Once you're familiar with how the various components are configured, you can try your hand at your own configuration. Just run the app with:
 
+```
 $ node node_modules/joule/src/app.js -c path_to_your_config.json 
+```
 
 ## Configuration
 
