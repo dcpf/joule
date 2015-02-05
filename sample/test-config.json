@@ -65,7 +65,7 @@
                     "components": [
                         {
                             "type": "parseTemplate",
-                            "file": "sample/sample.txt",
+                            "file": "node_modules/joule/sample/sample.txt",
                             "attrs": {"id": "$$req.getParam('id')$$"},
                             "setPayload": true
                         }
@@ -76,7 +76,7 @@
                     "components": [
                         {
                             "type": "parseTemplate",
-                            "file": "sample/sample.txt",
+                            "file": "node_modules/joule/sample/sample.txt",
                             "attrs": {"id": "$$req.getParam('id')$$"},
                             "setPayload": true
                         }
