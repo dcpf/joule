@@ -112,7 +112,8 @@ function getParseTemplateHandler (component, callback) {
             console.log('Getting ' + component.file + ' template from disk');
             // TODO: Use let with ES6
             try {
-                var file = fs.readFileSync(component.file, {encoding: encoding});
+                // Build the absolute path to the file using cwd + configured relative location
+                var file = fs.readFileSync(process.cwd() + '/' + component.file, {encoding: encoding});
             } catch (e) {
                 res.setError(e);
                 return;
@@ -193,17 +194,33 @@ function getChoiceHandler (component, callback) {
     
 };
 
+/**
+* Note that the custom component file *must* be configured as relative to the dir where the app is started.
+* For example, if you start the app from ~/node/myApp, and your custom component is in ~/node/myApp, 
+* you would need to configure it as:
+*
+* "require": "src/myCustomFunctions"
+*/
 function getCustomFunctionHandler (component, callback) {
     var func = function(req, res) {
-        var obj = require(component.require);
+        // Build the absolute path to the component file using cwd + configured relative location
+        var obj = require(process.cwd() + '/' + component.require);
         eval('obj.' + component.function + '(req, res, callback)');
     };
     return func;
 };
 
+/**
+* Note that the file where your custom error handler lives *must* be configured as relative to the dir where the app is started.
+* For example, if you start the app from ~/node/myApp, and your custom component is in ~/node/myApp,
+* you would need to configure it as:
+*
+* "require": "src/myCustomFunctions"
+*/
 function getCustomErrorHandlerHandler (component) {
     var func = function(req, res, err) {
-        var obj = require(component.require);
+        // Build the absolute path to the component file using cwd + configured relative location
+        var obj = require(process.cwd() + '/' + component.require);
         eval('obj.' + component.function + '(req, res, err)');
     };
     return func;

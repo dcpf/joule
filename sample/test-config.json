@@ -51,7 +51,7 @@
                     "components": [
                         {
                             "type": "customFunction",
-                            "require": "../sample/sampleCustomFunctions",
+                            "require": "node_modules/joule/sample/sampleCustomFunctions",
                             "function": "customFunction"
                         },
                         {
@@ -138,7 +138,7 @@
                         },
                         {
                             "type": "customErrorHandler",
-                            "require": "../sample/sampleCustomFunctions",
+                            "require": "node_modules/joule/sample/sampleCustomFunctions",
                             "function": "errorHandler"
                         }
                     ]

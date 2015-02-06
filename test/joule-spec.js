@@ -119,7 +119,7 @@ describe("Joule test Suite", function() {
         getURL('curl -i http://localhost:8081/genericErrorHandler')
         .then(function (response) {
             expect(response.headers['HTTP/1.1 500 Internal Server Error']).toBeDefined();
-            expect(response.body).toMatch("ENOENT, no such file or directory 'non-existent-file-to-force-an-error'");
+            expect(response.body).toMatch("ENOENT, no such file or directory '" + process.cwd() + "/non-existent-file-to-force-an-error'");
             done();
         });
     });
