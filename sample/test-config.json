@@ -21,7 +21,11 @@
                     "path": "/setHeaders",
                     "components": [
                         "setHeaders",
-                        "setHeadersLogger"
+                        "setHeadersLogger",
+                        {
+                            "type": "setPayload",
+                            "value": "Custom response headers have been set. You'll need to examine the response object to see them."
+                        }
                     ]
                 },
                 {
