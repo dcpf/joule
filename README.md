@@ -152,14 +152,15 @@ That's really it for the app and route configuration. Let's dive into the heart 
 ## Components 
 
 #### SetHeaders
-Sets the headers on the response. Example:
+Sets one or more headers on the response. Here's an example that sets the common no-cache response headers:
 
 ```
 {
     "type": "setHeaders",
     "headers": {
-        "header1": "whatever",
-        "header2": "some value"
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
     }
 }
 ```
@@ -177,7 +178,7 @@ Set the airline variable to "delta":
 }
 ```
 
-The value attribute can also take javascript code that will be evaluated. Just surround the code with $$ tokens:
+The value attribute can also take javascript code that will be evaluated. Just surround the code with $$ tokens. This example sets the passedInId variable to the value of the 'id' request parameter:
 
 ```
 {
@@ -202,7 +203,7 @@ The message attribute can also take javascript code that will be evaluated. Just
 ```
 {
     "type": "logger",
-    "message": "ID: $$res.getVariable('id')$$"
+    "message": "Looking up user $$res.getParam('userid')$$ ..."
 }
 ```
 
@@ -214,7 +215,7 @@ This parses the templates/products.html file passing in optional attributes for 
 ```
 {
     "type": "parseTemplate",
-    "file": "templates/products.html",
+    "file": "templates/products.html", // The relative path/file of the template
     "attrs": {
         "title": "Our Products",
         "id": "$$req.getParam('id')$$"
@@ -237,7 +238,7 @@ Same as above but stores the parsed output in a variable called productsHtml:
 }
 ```
 
-Note that the file *must* be configured as relative to the dir where the app is started. For example, if you start the app from ~/node/myApp, and your file is in ~/node/myApp/src/templates, you would need to configure it as:
+Note that the file *must* be configured as relative to the directory where the app is started. For example, if you start the app from ~/node/myApp, and your file is in ~/node/myApp/src/templates, you would need to configure it as:
 
 ```
 "file": "src/templates/file.html"
@@ -246,7 +247,7 @@ Note that the file *must* be configured as relative to the dir where the app is 
 #### WebServiceConsumer
 Calls a web service. Examples:
 
-Make a get request to an endPoint, expecting the response type to be JSON. Setting setPayload to true causes the parsed output to be sent as the response body:
+Make a get request to an end-point, expecting the response type to be JSON. Setting setPayload to true causes the parsed output to be sent as the response body:
 
 ```
 {
@@ -269,7 +270,7 @@ Same as above but stores the parsed output in a variable called statePolpulation
 }
 ```
 
-The endPoint can also contain javascript expressions. In this example, the year can be passed in as a request parameter:
+The end-point can also contain javascript expressions. In this example, the year can be passed in as a request parameter:
 
 ```
 {
@@ -342,7 +343,7 @@ Allows you to call your own custom function. Example:
 }
 ```
 
-Note that the component file *must* be configured as relative to the dir where the app is started. For example, if you start the app from ~/node/myApp, and your file is in ~/node/myApp/src, you would need to configure it as:
+Note that the component file *must* be configured as relative to the directory where the app is started. For example, if you start the app from ~/node/myApp, and your file is at ~/node/myApp/src/customFunctions.js, you would need to configure it as:
 
 ```
 "file": "src/customFunctions"
@@ -381,7 +382,7 @@ try {
 #### SetPayload
 Sets the response body to return to the client. This typically comes at the end of a route's flow. Examples:
 
-Set a plain text response body (the Content-Type header will automatically be set to text/plain):
+Set a plain text response body (the Content-Type response header will automatically be set to text/plain):
 
 ```
 {
@@ -390,7 +391,7 @@ Set a plain text response body (the Content-Type header will automatically be se
 }
 ```
 
-Set a JSON object as the response body (the Content-Type header will automatically be set to application/json):
+Set a JSON object as the response body (the Content-Type response header will automatically be set to application/json):
 
 ```
 {
@@ -403,7 +404,7 @@ Set a JSON object as the response body (the Content-Type header will automatical
 ```
 
 #### CustomErrorHandler
-By default, Joule handles errors by logging the stack trace and sending a 500 Internal Server Error back to the caller along with the error message. If you need your own behaviour, you can specify a custom error handler like so:
+By default, Joule handles errors by logging the stack trace and sending a '500 Internal Server Error' back to the caller along with the error message. If you need your own behaviour, you can specify a custom error handler like so:
 
 ```
 {
@@ -413,7 +414,7 @@ By default, Joule handles errors by logging the stack trace and sending a 500 In
 }
 ```
 
-Note that the component file *must* be configured as relative to the dir where the app is started. For example, if you start the app from ~/node/myApp, and your file is in ~/node/myApp/src, you would need to configure it as:
+Note that the component file *must* be configured as relative to the directory where the app is started. For example, if you start the app from ~/node/myApp, and your file is at ~/node/myApp/src/customFunctions.js, you would need to configure it as:
 
 ```
 "file": "src/customFunctions"
@@ -481,8 +482,8 @@ Joule modifies the request and response objects with the following handy functio
 Gets the value of a request parameter by name. This can be a parameter passed in as:
 
 * Query param: http://myhost.com/users?userid=1234
-* Path param: http://myhost.com/hello/:userid
-* POST param: {userid: 1234} (passed as the POST data in the body of the request)
+* Path param: http://myhost.com/users/:userid
+* POST param: {userid: 1234} (passed as the data in the body of the POST request)
 
 #### req.getParams()
 Returns a hash of all request parameters.
@@ -509,8 +510,8 @@ return;
 
 ## Commit History
 
-* 0.1.0 - Initial release
+* 0.1.0 - Initial release.
 
-* 0.1.2 - Modified parseTemplate test config to work for both dev and node_module contexts
+* 0.1.2 - Modified parseTemplate test config to work in both dev and node_module contexts.
 
-* 0.1.3 - Fixed a relative path issues which caused customFunctionHandler, customErrorHandler, and parsefile to not work properly.
+* 0.1.3 - Fixed a relative path issues, which caused customFunctionHandler, customErrorHandler, and parsefile to not work properly.
