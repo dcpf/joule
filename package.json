@@ -1,7 +1,7 @@
 {
   "name": "joule",
-  "version": "0.1.4",
-  "description": "Node-based implementation of Mule",
+  "version": "0.1.5",
+  "description": "Node implementation of Mule for creating REST services",
   "main": "/",
   "keywords": [
       "rest",
