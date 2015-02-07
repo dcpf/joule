@@ -194,13 +194,6 @@ function getChoiceHandler (component, callback) {
     
 };
 
-/**
-* Note that the custom component file *must* be configured as relative to the dir where the app is started.
-* For example, if you start the app from ~/node/myApp, and your custom component is in ~/node/myApp, 
-* you would need to configure it as:
-*
-* "require": "src/myCustomFunctions"
-*/
 function getCustomFunctionHandler (component, callback) {
     var func = function(req, res) {
         // Build the absolute path to the component file using cwd + configured relative location
@@ -210,13 +203,6 @@ function getCustomFunctionHandler (component, callback) {
     return func;
 };
 
-/**
-* Note that the file where your custom error handler lives *must* be configured as relative to the dir where the app is started.
-* For example, if you start the app from ~/node/myApp, and your custom component is in ~/node/myApp,
-* you would need to configure it as:
-*
-* "require": "src/myCustomFunctions"
-*/
 function getCustomErrorHandlerHandler (component) {
     var func = function(req, res, err) {
         // Build the absolute path to the component file using cwd + configured relative location

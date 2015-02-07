@@ -26,11 +26,12 @@ Inspired by Mule (http://www.mulesoft.com), Joule is a collection of built-in co
     * [res.setPayload()](#ressetpayloadpayload)
     * [res.getPayload()](#resgetpayload)
     * [res.setError()](#resseterrorerr)
+* [Commit History](#commit-history)
 
 ## Download
 
 ```
-$ cd some_dir
+$ cd my_app_dir
 $ npm install joule
 ```
 
@@ -39,7 +40,7 @@ $ npm install joule
 Joule comes with a sample configuration used mostly for tests, tho you can use it to run the app to see how it works. To start Joule with the sample/test config:
 
 ```
-$ cd some_dir
+$ cd my_app_dir
 $ node node_modules/joule/src/app.js -c node_modules/joule/sample/test-config.json 
 ```
 
@@ -65,7 +66,7 @@ App listening on localhost:8081
 App listening on localhost:8082
 ```
 
-Once the app is running, you can try hitting the various sample/test end-points to see their output (note that some of these set custom headers).
+Once the app is running, you can try hitting the various sample/test end-points to see their output:
 
 * http://localhost:8081/setHeaders
 * http://localhost:8081/setVariable?id=testId
@@ -88,7 +89,7 @@ You can take a look at node_modules/joule/sample/test-config.json to see how eac
 Once you're familiar with how the various components are configured, you can try your hand at your own configuration. Just run the app with:
 
 ```
-$ node node_modules/joule/src/app.js -c path_to_your_config.json 
+$ node node_modules/joule/src/app.js -c relative_path_to_your_config.json 
 ```
 
 ## Configuration
@@ -227,13 +228,19 @@ Same as above but stores the parsed output in a variable called productsHtml:
 ```
 {
     "type": "parseTemplate",
-    "file": "templates/products.html",
+    "file": "templates/products.html", // The relative path/file of the template
     "attrs": {
         "title": "Our Products",
         "id": "$$req.getParam('id')$$"
     },
     "varName": "productsHtml"
 }
+```
+
+Note that the file *must* be configured as relative to the dir where the app is started. For example, if you start the app from ~/node/myApp, and your file is in ~/node/myApp/src/templates, you would need to configure it as:
+
+```
+"file": "src/templates/file.html"
 ```
 
 #### WebServiceConsumer
@@ -330,9 +337,15 @@ Allows you to call your own custom function. Example:
 ```
 {
     "type": "customFunction",
-    "require": "app/customFunctions", // The relative file where the custom function lives
+    "require": "src/customFunctions", // The relative file where the custom function lives
     "function": "myCustomFunction" // The function name
 }
+```
+
+Note that the component file *must* be configured as relative to the dir where the app is started. For example, if you start the app from ~/node/myApp, and your file is in ~/node/myApp/src, you would need to configure it as:
+
+```
+"file": "src/customFunctions"
 ```
 
 When writing a custom function, it must accept three arguments:
@@ -398,6 +411,12 @@ By default, Joule handles errors by logging the stack trace and sending a 500 In
     "require": "app/customFunctions", // The relative file where the custom error handler lives
     "function": "myErrorHandler" // The error handler function name
 }
+```
+
+Note that the component file *must* be configured as relative to the dir where the app is started. For example, if you start the app from ~/node/myApp, and your file is in ~/node/myApp/src, you would need to configure it as:
+
+```
+"file": "src/customFunctions"
 ```
 
 When writing a custom error handler function, it must accept three arguments:
@@ -487,3 +506,11 @@ When an error occurs in a custom component, calling this function will invoke th
 res.setError(err);
 return;
 ```
+
+## Commit History
+
+* 0.1.0 - Initial release
+
+* 0.1.2 - Modified parseTemplate test config to work for both dev and node_module contexts
+
+* 0.1.3 - Fixed a relative path issues which caused customFunctionHandler, customErrorHandler, and parsefile to not work properly.
